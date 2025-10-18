@@ -29,6 +29,22 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+app.get('/docente', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'docente.html'));
+});
+
+app.get('/categoria', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'categoria.html'));
+});
+
+app.get('/subcategoria', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'subcategoria.html'));
+});
+
+app.get('/curso', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'curso.html'));
+});
+
 // Comunicación en formato JSON
 app.use(express.json());
 

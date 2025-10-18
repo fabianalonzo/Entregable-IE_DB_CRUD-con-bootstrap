@@ -3,6 +3,7 @@ const db = require("../config/db");
 
 // Crear curso
 exports.crearCurso = async (req, res) => {
+  // Orden según tabla: id_curso (auto), titulo, id_subcat, fecha_inicio, fecha_fin, duracion_horas, id_docente, precio
   const { titulo, id_subcat, fecha_inicio, fecha_fin, duracion_horas, id_docente, precio } = req.body;
 
   if (!titulo || !id_subcat || !fecha_inicio || !fecha_fin || !duracion_horas || !id_docente || !precio) {
@@ -25,7 +26,16 @@ exports.crearCurso = async (req, res) => {
       INSERT INTO curso (titulo, id_subcat, fecha_inicio, fecha_fin, duracion_horas, id_docente, precio)
       VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
-    const [result] = await db.query(sql, [titulo, id_subcat, fecha_inicio, fecha_fin, duracion_horas, id_docente, precio]);
+    const [result] = await db.query(sql, [
+      // Orden igual que en tabla
+      titulo,       // titulo
+      id_subcat,    // id_subcat
+      fecha_inicio, // fecha_inicio
+      fecha_fin,    // fecha_fin
+      duracion_horas, // duracion_horas
+      id_docente,   // id_docente
+      precio       // precio
+    ]);
 
     res.status(201).json({ id: result.insertId, mensaje: "Curso creado correctamente" });
   } catch (e) {
@@ -37,7 +47,7 @@ exports.crearCurso = async (req, res) => {
 // Listar cursos
 exports.obtenerCursos = async (req, res) => {
   const sql = `
-    SELECT c.id_curso AS id, c.titulo, c.fecha_inicio, c.fecha_fin, c.duracion_horas, c.precio,
+    SELECT c.id_curso AS id, c.titulo, c.id_subcat, c.fecha_inicio, c.fecha_fin, c.duracion_horas, c.id_docente, c.precio,
            s.nombre AS subcategoria, d.nombre AS docente
     FROM curso c
     JOIN subCategoria s ON c.id_subcat = s.id_subcat
@@ -58,7 +68,8 @@ exports.obtenerCursoPorId = async (req, res) => {
   const { id } = req.params;
 
   const sql = `
-    SELECT * FROM curso WHERE id_curso = ?
+    SELECT id_curso, titulo, id_subcat, fecha_inicio, fecha_fin, duracion_horas, id_docente, precio
+    FROM curso WHERE id_curso = ?
   `;
 
   try {
@@ -77,6 +88,7 @@ exports.obtenerCursoPorId = async (req, res) => {
 // Actualizar curso
 exports.actualizarCurso = async (req, res) => {
   const { id } = req.params;
+  // Orden campos para actualizar igual que en tabla
   const { titulo, id_subcat, fecha_inicio, fecha_fin, duracion_horas, id_docente, precio } = req.body;
 
   if (!titulo && !id_subcat && !fecha_inicio && !fecha_fin && !duracion_horas && !id_docente && !precio) {
