@@ -28,13 +28,13 @@ exports.crearSubCategoria = async (req, res) => {
 
 // Listar subcategorías
 exports.obtenerSubCategorias = async (req, res) => {
-  const sql = `SELECT s.id_subcat AS id, s.nombre, s.id_categoria, c.nombre AS categoria
+  const sql = `SELECT s.id_subcat , s.nombre, c.nombre AS categoria
                FROM subCategoria s
                JOIN categoria c ON s.id_categoria = c.id_categoria`;
 
   try {
     const [subcategorias] = await db.query(sql);
-    res.status(200).json({ subcategorias });
+    res.status(200).json(subcategorias);
   } catch (e) {
     console.error(e);
     res.status(500).json({ mensaje: "Error al obtener subcategorías" });
@@ -44,7 +44,7 @@ exports.obtenerSubCategorias = async (req, res) => {
 // Obtener por ID
 exports.obtenerSubCategoriaPorId = async (req, res) => {
   const { id } = req.params;
-  const sql = "SELECT id_subcat AS id, nombre, id_categoria FROM subCategoria WHERE id_subcat = ?";
+  const sql = "SELECT id_subcat, nombre, id_categoria FROM subCategoria WHERE id_subcat = ?";
 
   try {
     const [rows] = await db.query(sql, [id]);

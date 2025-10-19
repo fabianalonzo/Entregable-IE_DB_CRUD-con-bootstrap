@@ -26,11 +26,11 @@ exports.crearCategoria = async (req, res) => {
 
 // Listar todas las categorías
 exports.obtenerCategorias = async (req, res) => {
-  const sql = "SELECT id_categoria AS id, nombre FROM categoria";
+  const sql = "SELECT id_categoria, nombre FROM categoria";
 
   try {
     const [categorias] = await db.query(sql);
-    res.status(200).json({ categorias });
+    res.status(200).json(categorias);
   } catch (e) {
     console.error(e);
     res.status(500).json({ mensaje: "Error interno del servidor" });
@@ -40,7 +40,7 @@ exports.obtenerCategorias = async (req, res) => {
 // Obtener categoría por ID
 exports.obtenerCategoriaPorId = async (req, res) => {
   const { id } = req.params;
-  const sql = "SELECT id_categoria AS id, nombre FROM categoria WHERE id_categoria = ?";
+  const sql = "SELECT id_categoria, nombre FROM categoria WHERE id_categoria = ?";
 
   try {
     const [categorias] = await db.query(sql, [id]);

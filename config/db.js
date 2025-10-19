@@ -1,5 +1,5 @@
 //Accedemos a la base de datos
-
+require('dotenv').config()
 //Accedemos al archivo .env en donde se encuentran las claves de acceso
 const mysql = require('mysql2/promise')
 

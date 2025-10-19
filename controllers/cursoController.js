@@ -4,20 +4,42 @@ const db = require("../config/db");
 // Crear curso
 exports.crearCurso = async (req, res) => {
   // Orden según tabla: id_curso (auto), titulo, id_subcat, fecha_inicio, fecha_fin, duracion_horas, id_docente, precio
-  const { titulo, id_subcat, fecha_inicio, fecha_fin, duracion_horas, id_docente, precio } = req.body;
+  const {
+    titulo,
+    id_subcat,
+    fecha_inicio,
+    fecha_fin,
+    duracion_horas,
+    id_docente,
+    precio,
+  } = req.body;
 
-  if (!titulo || !id_subcat || !fecha_inicio || !fecha_fin || !duracion_horas || !id_docente || !precio) {
+  if (
+    !titulo ||
+    !id_subcat ||
+    !fecha_inicio ||
+    !fecha_fin ||
+    !duracion_horas ||
+    !id_docente ||
+    !precio
+  ) {
     return res.status(400).json({ mensaje: "Faltan campos obligatorios" });
   }
 
   try {
     // Validar subcategoría y docente
-    const [subcat] = await db.query("SELECT id_subcat FROM subCategoria WHERE id_subcat = ?", [id_subcat]);
+    const [subcat] = await db.query(
+      "SELECT id_subcat FROM subCategoria WHERE id_subcat = ?",
+      [id_subcat]
+    );
     if (subcat.length === 0) {
       return res.status(400).json({ mensaje: "La subcategoría no existe" });
     }
 
-    const [docente] = await db.query("SELECT id_docente FROM docente WHERE id_docente = ?", [id_docente]);
+    const [docente] = await db.query(
+      "SELECT id_docente FROM docente WHERE id_docente = ?",
+      [id_docente]
+    );
     if (docente.length === 0) {
       return res.status(400).json({ mensaje: "El docente no existe" });
     }
@@ -28,16 +50,18 @@ exports.crearCurso = async (req, res) => {
     `;
     const [result] = await db.query(sql, [
       // Orden igual que en tabla
-      titulo,       // titulo
-      id_subcat,    // id_subcat
+      titulo, // titulo
+      id_subcat, // id_subcat
       fecha_inicio, // fecha_inicio
-      fecha_fin,    // fecha_fin
+      fecha_fin, // fecha_fin
       duracion_horas, // duracion_horas
-      id_docente,   // id_docente
-      precio       // precio
+      id_docente, // id_docente
+      precio, // precio
     ]);
 
-    res.status(201).json({ id: result.insertId, mensaje: "Curso creado correctamente" });
+    res
+      .status(201)
+      .json({ id: result.insertId, mensaje: "Curso creado correctamente" });
   } catch (e) {
     console.error(e);
     res.status(500).json({ mensaje: "Error interno del servidor" });
@@ -47,8 +71,14 @@ exports.crearCurso = async (req, res) => {
 // Listar cursos
 exports.obtenerCursos = async (req, res) => {
   const sql = `
-    SELECT c.id_curso AS id, c.titulo, c.id_subcat, c.fecha_inicio, c.fecha_fin, c.duracion_horas, c.id_docente, c.precio,
-           s.nombre AS subcategoria, d.nombre AS docente
+    SELECT c.id_curso, 
+           c.titulo,
+           s.nombre AS subcategoria,
+           DATE_FORMAT(c.fecha_inicio, '%Y-%m-%d') AS fecha_inicio,
+           DATE_FORMAT(c.fecha_fin, '%Y-%m-%d') AS fecha_fin,
+           c.duracion_horas, 
+           d.nombre AS docente,
+           c.precio 
     FROM curso c
     JOIN subCategoria s ON c.id_subcat = s.id_subcat
     JOIN docente d ON c.id_docente = d.id_docente
@@ -56,7 +86,7 @@ exports.obtenerCursos = async (req, res) => {
 
   try {
     const [cursos] = await db.query(sql);
-    res.status(200).json({ cursos });
+    res.status(200).json(cursos);
   } catch (e) {
     console.error(e);
     res.status(500).json({ mensaje: "Error interno al obtener los cursos" });
@@ -89,9 +119,25 @@ exports.obtenerCursoPorId = async (req, res) => {
 exports.actualizarCurso = async (req, res) => {
   const { id } = req.params;
   // Orden campos para actualizar igual que en tabla
-  const { titulo, id_subcat, fecha_inicio, fecha_fin, duracion_horas, id_docente, precio } = req.body;
+  const {
+    titulo,
+    id_subcat,
+    fecha_inicio,
+    fecha_fin,
+    duracion_horas,
+    id_docente,
+    precio,
+  } = req.body;
 
-  if (!titulo && !id_subcat && !fecha_inicio && !fecha_fin && !duracion_horas && !id_docente && !precio) {
+  if (
+    !titulo &&
+    !id_subcat &&
+    !fecha_inicio &&
+    !fecha_fin &&
+    !duracion_horas &&
+    !id_docente &&
+    !precio
+  ) {
     return res.status(400).json({ mensaje: "No hay datos para actualizar" });
   }
 
@@ -105,8 +151,12 @@ exports.actualizarCurso = async (req, res) => {
     }
 
     if (id_subcat) {
-      const [subcat] = await db.query("SELECT id_subcat FROM subCategoria WHERE id_subcat = ?", [id_subcat]);
-      if (subcat.length === 0) return res.status(400).json({ mensaje: "Subcategoría no válida" });
+      const [subcat] = await db.query(
+        "SELECT id_subcat FROM subCategoria WHERE id_subcat = ?",
+        [id_subcat]
+      );
+      if (subcat.length === 0)
+        return res.status(400).json({ mensaje: "Subcategoría no válida" });
       campos.push("id_subcat = ?");
       valores.push(id_subcat);
     }
@@ -127,8 +177,12 @@ exports.actualizarCurso = async (req, res) => {
     }
 
     if (id_docente) {
-      const [docente] = await db.query("SELECT id_docente FROM docente WHERE id_docente = ?", [id_docente]);
-      if (docente.length === 0) return res.status(400).json({ mensaje: "Docente no válido" });
+      const [docente] = await db.query(
+        "SELECT id_docente FROM docente WHERE id_docente = ?",
+        [id_docente]
+      );
+      if (docente.length === 0)
+        return res.status(400).json({ mensaje: "Docente no válido" });
       campos.push("id_docente = ?");
       valores.push(id_docente);
     }

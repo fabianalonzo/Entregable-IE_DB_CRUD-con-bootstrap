@@ -26,11 +26,11 @@ exports.crearDocente = async (req, res) => {
 
 // Listar
 exports.obtenerDocentes = async (req, res) => {
-  const sql = "SELECT id_docente AS id, nombre FROM docente";
+  const sql = "SELECT id_docente, nombre FROM docente";
 
   try {
     const [docentes] = await db.query(sql);
-    res.status(200).json({ docentes });
+    res.status(200).json(docentes);
   } catch (e) {
     console.error(e);
     res.status(500).json({ mensaje: "Error interno del servidor" });
@@ -40,7 +40,7 @@ exports.obtenerDocentes = async (req, res) => {
 // Buscar por ID
 exports.obtenerDocentePorId = async (req, res) => {
   const { id } = req.params;
-  const sql = "SELECT id_docente AS id, nombre FROM docente WHERE id_docente = ?";
+  const sql = "SELECT id_docente, nombre FROM docente WHERE id_docente = ?";
 
   try {
     const [docentes] = await db.query(sql, [id]);
